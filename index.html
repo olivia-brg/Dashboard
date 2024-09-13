@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Dashboard</title>
+	<link href="style.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+</head>
+
+<body>
+	<input type="image" src="./ico/fleche-gauche.png" class="diapo" id="previousButton">
+	<input type="image" src="./ico/fleche-droite.png" class="diapo" id="nextButton">
+	<div id="time" class="font divBackground"></div>
+
+	<div id="holidayCSS">
+		<div id="holiday" class="divBackground"></div>
+	</div>
+
+	<div id="newsDiv" class="divBackground">
+		<div id="navbarNews">
+			<select name="Trie" id="newsSort">
+				<option value="" disabled selected>Trier par :</option>
+				<option id="ascendingNews" value="ascending">Nom : croissant</option>
+				<option id="descendingNews" value="descending">Nom : décroissant</option>
+			</select>
+			<select name="Langue" id="newsLang">
+				<option value="" disabled selected>Filtrer par langue :</option>
+				<option value="en">Anglais</option>
+				<option value="fr">Français</option>
+				<option value="es">Espagnol</option>
+				<option value="it">Italien</option>
+				<option value="ru">Russe</option>
+				<option value="de">Allemand</option>
+				<option value="nl">Neerlandais</option>
+			</select>
+		</div>
+	</div>
+
+	<div id="ImgDscDiv" class="divBackground">
+		<input type="button" class="descriptionButton" value="En savoir plus sur l'image du jour" />
+		<button id="previousButton">previousButton</button>
+		<button id="nextButton">nextButton</button>
+	</div>
+
+	<div id="myMap">
+		<div id="view-button">
+			<input type="image" src="./ico/bicycle.png" class="bike-button" id="button1" value="Vélos disponibles" />
+			<input type="image" src="./ico/parking.png" class="bike-button" id="button2" value="Places disponibles" />
+		</div>
+	</div>
+	<!-- Make sure you put this AFTER Leaflet's CSS-->
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+	<!--Your custom script should be included after Leaflet-->
+	<script src="bikeFunction.js"></script>
+
+	<script src="script.js" type="module"></script>
+
+</body>
+
+</html>
