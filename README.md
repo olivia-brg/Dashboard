@@ -1,4 +1,6 @@
-# PROJET DATAVIZ by SUPER AWESOME TEAM NAME
+Projet collectif de moins de 2 semaines à 3 collaborateur dans le cadre de la formation Ada tech school. L'objectif étant de manipuler des APIs.
+
+# PROJET DATAVIZ
 by AdaTechSchool
 
 ## Introduction : la consigne
