@@ -4,14 +4,14 @@ let groupMarkers = L.markerClusterGroup();
 cityMap.addLayer(groupMarkers);
 
 export async function getAvailableBikes() {
-    groupMarkers.clearLayers();
-    console.log('test');
-    try {
-        const allData = await fetchAllData();
-        createMarkers(allData, groupMarkers, cityMap);
-    } catch (error) {
-        console.error(error.message);
-    }
+	groupMarkers.clearLayers();
+	console.log('test');
+	try {
+		const allData = await fetchAllData();
+		createMarkers(allData, groupMarkers, cityMap);
+	} catch (error) {
+		console.error(error.message);
+	}
 }
 
 function initializeMap() {
@@ -21,10 +21,17 @@ function initializeMap() {
 function loadTiles(map) {
 	L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
 		attribution:
-		'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+			'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
 		minZoom: 1,
 		maxZoom: 20,
 	}).addTo(map);
+}
+
+async function fetchAllData() {
+	const json1 = await fetchData(0, 100); // on appel fetchData pour les 100 premiers résultats
+	const json2 = await fetchData(100, 25); // on appel fetchData pour les 25 résultats suivants
+	const json = [...json1.results, ...json2.results]; // on place les résultats dans un nouveau tableau unique
+	return json;
 }
 
 async function fetchData(offset, limit) {
@@ -37,58 +44,30 @@ async function fetchData(offset, limit) {
 	return await response.json();
 }
 
-async function fetchAllData() {
-	const json1 = await fetchData(0, 100); // on appel fetchData pour les 100 premiers résultats
-	const json2 = await fetchData(100, 25); // on appel fetchData pour les 25 résultats suivants
-	const json = [...json1.results, ...json2.results]; // on place les résultats dans un nouveau tableau unique
-	return json;
-}
-
-function listenerButton(data, markers, myMap) {
-	document
-	.getElementById("button1")
-	.addEventListener("click", () => updateMarkers('available_bikes', data, markers, myMap));
-	document.getElementById("button2").addEventListener("click", () => updateMarkers('available_bike_stands', data, markers, myMap));
-}
-
 function createMarkers(data, markers, myMap) {
-	for (let i = 0; i < data.length; i++) {
-		let availableBikes = new Set();
-		availableBikes.add(data[i]);
-		//On parcourt les différentes stations et on leur attribue un marqueur
-		for (let bikeStns of availableBikes) {	
-			let marker = L.marker([bikeStns.position.lat, bikeStns.position.lon], {
-				icon: updatePinpoint(bikeStns, "available_bikes"),
-			}); 
-			marker.bindPopup(
-				`<p>${bikeStns.name}<br>${bikeStns.address}<br> Vélos disponibles : ${bikeStns.available_bikes}<br>Places disponibles: ${bikeStns.available_bike_stands}`
-			);
-			markers.addLayer(marker);
-		}
-		myMap.addLayer(markers);
+
+	//On parcourt les différentes stations et on leur attribue un marqueur
+	for (let bikeStns of data) {
+		let marker = L.marker([bikeStns.position.lat, bikeStns.position.lon]);
+		marker.bindPopup(
+			`<p>${bikeStns.name}<br>${bikeStns.address}<br> Vélos disponibles : ${bikeStns.available_bikes}<br>Places disponibles: ${bikeStns.available_bike_stands}`
+		);
+		markers.addLayer(marker);
 	}
-	listenerButton(data, markers, myMap);
+	myMap.addLayer(markers);
+
+	// listenerButton(data, markers, myMap);
 }
 
-function updateMarkers(source, data, markers, myMap) {
-	markers.clearLayers();
-	
-	for (let i = 0; i < data.length; i++) {
-		let availableBikes = new Set();
-		availableBikes.add(data[i]);
-		//On parcourt les différentes stations et on leur attribue un marqueur
-		for (let bikeStns of availableBikes) {
-			let marker = L.marker([bikeStns.position.lat, bikeStns.position.lon], {
-				icon: updatePinpoint(bikeStns, source),
-			}); 
-			marker.bindPopup(
-				`<p>${bikeStns.name}<br>${bikeStns.address}<br> Vélos disponibles : ${bikeStns.available_bikes}<br>Places disponibles: ${bikeStns.available_bike_stands}`
-			);
-			markers.addLayer(marker);
-		}
-		myMap.addLayer(markers);
-	}
-}
+// function createMarkers(data, myMap) {
+// 	for (let bikeStns of data) {
+// 		let marker = L.marker([bikeStns.position.lat, bikeStns.position.lon]);
+// 		marker.bindPopup(
+// 			`<p>${bikeStns.name}<br>${bikeStns.address}<br> Vélos disponibles : ${bikeStns.available_bikes}<br>Places disponibles: ${bikeStns.available_bike_stands}`
+// 		);
+// 		myMap.addLayer(marker);
+// 	}
+// }
 
 function updatePinpoint(stations, source) {
 	let newIcon = L.Icon.extend({
@@ -98,13 +77,13 @@ function updatePinpoint(stations, source) {
 			popupAnchor: [-3, -50], // point from which the popup should open relative to the iconAnchor
 		},
 	});
-	
-	let greenIcon = new newIcon({iconUrl: "./ico/pin-point-GREEN.png",}),
-		orangeIcon = new newIcon({iconUrl: "./ico/pin-point-ORANGE.png",}),
+
+	let greenIcon = new newIcon({ iconUrl: "./ico/pin-point-GREEN.png", }),
+		orangeIcon = new newIcon({ iconUrl: "./ico/pin-point-ORANGE.png", }),
 		redIcon = new newIcon({ iconUrl: "./ico/pin-point-RED.png" });
-	
+
 	let dynIcon;
-	
+
 	if (stations[source] > 3) {
 		return dynIcon = greenIcon;
 	} else if (stations[source] >= 1) {
@@ -113,5 +92,34 @@ function updatePinpoint(stations, source) {
 		return dynIcon = redIcon;
 	}
 }
+
+function listenerButton(data, markers, myMap) {
+	document
+		.getElementById("button1")
+		.addEventListener("click", () => updateMarkers('available_bikes', data, markers, myMap));
+	document.getElementById("button2").addEventListener("click", () => updateMarkers('available_bike_stands', data, markers, myMap));
+}
+
+function updateMarkers(source, data, markers, myMap) {
+	markers.clearLayers();
+
+	for (let i = 0; i < data.length; i++) {
+		let availableBikes = new Set();
+		availableBikes.add(data[i]);
+		//On parcourt les différentes stations et on leur attribue un marqueur
+		for (let bikeStns of availableBikes) {
+			let marker = L.marker([bikeStns.position.lat, bikeStns.position.lon], {
+				icon: updatePinpoint(bikeStns, source),
+			});
+			marker.bindPopup(
+				`<p>${bikeStns.name}<br>${bikeStns.address}<br> Vélos disponibles : ${bikeStns.available_bikes}<br>Places disponibles: ${bikeStns.available_bike_stands}`
+			);
+			markers.addLayer(marker);
+		}
+		myMap.addLayer(markers);
+	}
+}
+
+
 
 setInterval(getAvailableBikes, 60000);
